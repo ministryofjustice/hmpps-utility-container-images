@@ -1,11 +1,11 @@
-FROM python:3.8.2-slim-buster
+FROM python:3.9-slim-buster
 
 ENV \
   HELM_VERSION=3.2.4 \
   KUBECTL_VERSION=1.17.8
 
 RUN apt-get clean && apt-get update \
-    && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip \
+    && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie \
     && locale-gen en_GB.UTF-8 \
     && ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
