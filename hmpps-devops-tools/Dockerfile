@@ -1,8 +1,8 @@
 FROM python:3.9-slim-buster
 
 ENV \
-  HELM_VERSION=3.2.4 \
-  KUBECTL_VERSION=1.17.8
+  HELM_VERSION=3.6.1 \
+  KUBECTL_VERSION=1.18.2
 
 RUN apt-get clean && apt-get update \
     && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie \
