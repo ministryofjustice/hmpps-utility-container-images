@@ -15,6 +15,7 @@ jobs:
         dockerfile-dir:
           - hmpps-devops-tools
           - hmpps-mssql-tools
+          - hmpps-clamav
     permissions:
       packages: write
       contents: read
