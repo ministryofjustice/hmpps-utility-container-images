@@ -1,6 +1,5 @@
 name: Trivy Scan Images
 on:
-  push:
   # Run Trivy Scan every week day
   schedule:
     - cron:  '0 7 * * 1-5'
