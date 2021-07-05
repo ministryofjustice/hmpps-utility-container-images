@@ -1,13 +1,17 @@
 # hmpps-clamav
 
-Repository which is used to build a tailored version of a ClamAV docker image.
+ClamAV docker image - see <https://www.clamav.net/>
 
-This docker image is mostly borrowed from: <https://github.com/UKHomeOffice/docker-clamav> ...but with a few changes:
+This docker image is mostly borrowed from: <https://github.com/UKHomeOffice/docker-clamav>
 
-- Combined a RUN step to make the image smaller
-- Specified a specific group ID for clamav, needed for the security context in the K8s volume mount
-- Updated the clamav version to the current latest stable version
+## Usage and deployments
 
-## Usage and deployments
+```sh
+docker pull ghcr.io/ministryofjustice/hmpps-clamav-freshclam-daily:latest
+```
 
-This docker image is built on a daily schedule, and pushed to github packages.
+The main Dockerfile in this folder is the a base image for `Dockerfile.freshclam-daily` - which is built and published everyday with an up-to-date virus DB. 
+
+This daily built image can then be pulled (via k8s cronjob) by applications running CloudPlatforms cluster which require an up-to-date virus DB.
+
+Note: This is an alternative solution to running a ClamAV mirror inside CloudPlatform's cluster - which no single team wanted to manage/run. The underlying issue was that with multiple teams all running clamav inside one kubernetes cluster we were hitting rate limiting issue with clamav's main download site that prevented freshclam from working, and so keeping the virus DB up-to-date.
