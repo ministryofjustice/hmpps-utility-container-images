@@ -1,0 +1,84 @@
+name: Daily build ClamAV with up-to-date virus DB
+on:
+  push:
+  schedule:
+    - cron:  '0 6 * * *'
+env:
+  REGISTRY: ghcr.io
+jobs:
+  build_scan_push:
+    name: ClamAV-daily
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile-dir:
+          - hmpps-clamav
+    permissions:
+      packages: write
+      contents: read
+      security-events: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}-freshclam-daily
+          flavor: |
+            latest=true
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=sha
+            type=raw,value=daily
+      - name: Log in to GitHub container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build container image
+        uses: docker/build-push-action@v2
+        with:
+          file: ./${{ matrix.dockerfile-dir }}/Dockerfile.freshclam-daily
+          context: ./${{ matrix.dockerfile-dir }}
+          pull: true
+          push: false
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}-freshclam-daily:${{ github.sha }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}-freshclam-daily:${{ github.sha }}
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Push container image to repository
+        if: ${{ success() && github.ref == 'refs/heads/main' }}
+        uses: docker/build-push-action@v2
+        with:
+          file: ./${{ matrix.dockerfile-dir }}/Dockerfile.freshclam-daily
+          context: ./${{ matrix.dockerfile-dir }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+
+      - name: Slack notification
+        id: slack
+        if: ${{ failure() }}
+        uses: slackapi/slack-github-action@v1.14.0
+        with:
+          channel-id: ${{ secrets.SLACK_GITHUB_ALERTS }}
+          slack-message: "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|View on github>\n"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}

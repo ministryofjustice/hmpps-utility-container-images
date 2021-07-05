@@ -1,0 +1,42 @@
+name: Trivy Scan Images
+on:
+  # Run Trivy Scan every week day
+  schedule:
+    - cron:  '0 7 * * 1-5'
+env:
+  REGISTRY: ghcr.io
+jobs:
+  trivy_scan_latest:
+    name: Build-Scan-Push
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile-dir:
+          - hmpps-devops-tools
+          - hmpps-mssql-tools
+          - hmpps-clamav
+    permissions:
+      packages: write
+      contents: read
+      security-events: write
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:latest
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Slack notification
+        id: slack
+        if: ${{ failure() }}
+        uses: slackapi/slack-github-action@v1.14.0
+        with:
+          channel-id: ${{ secrets.SLACK_GITHUB_ALERTS }}
+          slack-message: "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|View on github>\n"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
