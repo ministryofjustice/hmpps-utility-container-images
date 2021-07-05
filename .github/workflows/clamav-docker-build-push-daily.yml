@@ -27,7 +27,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}-freshclam
           flavor: |
             latest=true
           tags: |
@@ -46,16 +46,17 @@ jobs:
       - name: Build container image
         uses: docker/build-push-action@v2
         with:
+          file: ./${{ matrix.dockerfile-dir }}/Dockerfile.freshclam-daily
           context: ./${{ matrix.dockerfile-dir }}
           pull: true
           push: false
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}-freshclam:${{ github.sha }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}-freshclam:${{ github.sha }}
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -63,9 +64,10 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Push container image to repository
-        if: ${{ success() && github.ref == 'refs/heads/main' }}
+        if: ${{ success() && github.ref == 'refs/heads/DT-2165' }}
         uses: docker/build-push-action@v2
         with:
+          file: ./${{ matrix.dockerfile-dir }}/Dockerfile.freshclam-daily
           context: ./${{ matrix.dockerfile-dir }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
