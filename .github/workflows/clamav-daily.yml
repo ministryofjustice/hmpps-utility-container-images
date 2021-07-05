@@ -1,14 +1,13 @@
-name: Daily Build ClamAV Image
+name: Daily build ClamAV with up-to-date virus DB
 on:
   push:
-  # Build and publish a fresh image every day containing an up-to-date virus DB.
   schedule:
     - cron:  '0 6 * * *'
 env:
   REGISTRY: ghcr.io
 jobs:
   build_scan_push:
-    name: ClamAV-Build-Scan-Push
+    name: ClamAV-daily
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -36,6 +35,7 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
             type=sha
+            type=raw,value=daily
       - name: Log in to GitHub container registry
         uses: docker/login-action@v1
         with:
