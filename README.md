@@ -6,3 +6,4 @@ These images are built in github actions see `.github/workflows/docker-build-pus
 | --- | --- | --- |
 | `hmpps-devops-tools` | contains various useful tools (az cli, aws cli, kubectl, helm), runs as non-root | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-devops-tools> |
 | `hmpps-mssql-tools` | contains mssql-tools and az cli. For sqlserver db refresh jobs | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-mssql-tools> |
+| `hmpps-clamav` | ClamAV image, built and published daily, see README in folder | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-clamav> |

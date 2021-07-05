@@ -13,6 +13,7 @@ jobs:
         dockerfile-dir:
           - hmpps-devops-tools
           - hmpps-mssql-tools
+          - hmpps-clamav
     permissions:
       packages: write
       contents: read
@@ -62,7 +63,7 @@ jobs:
 
       - name: Push container image to repository
         # Only push to repo if - Trivy scan passed & on main branch
-        if: ${{ success() && github.ref == 'refs/heads/main' }}
+        if: ${{ success() && github.ref == 'refs/heads/DT-2165' }}
         uses: docker/build-push-action@v2
         with:
           context: ./${{ matrix.dockerfile-dir }}

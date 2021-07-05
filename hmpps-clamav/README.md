@@ -8,3 +8,6 @@ This docker image is mostly borrowed from: <https://github.com/UKHomeOffice/dock
 - Specified a specific group ID for clamav, needed for the security context in the K8s volume mount
 - Updated the clamav version to the current latest stable version
 
+## Usage and deployments
+
+This docker image is built on a daily schedule, and pushed to github packages.
