@@ -64,7 +64,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Push container image to repository
-        if: ${{ success() && github.ref == 'refs/heads/DT-2165' }}
+        if: ${{ success() && github.ref == 'refs/heads/main' }}
         uses: docker/build-push-action@v2
         with:
           file: ./${{ matrix.dockerfile-dir }}/Dockerfile.freshclam-daily
