@@ -1,7 +1,7 @@
 FROM python:3.9-slim-buster
 
 ENV \
-  HELM_VERSION=3.6.1 \
+  HELM_VERSION=3.6.3 \
   KUBECTL_VERSION=1.18.2
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
