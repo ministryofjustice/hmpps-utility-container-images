@@ -21,6 +21,10 @@ jobs:
       contents: read
       security-events: write
     steps:
+      # Need to checkout the repo to get the .trivyignore file
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
