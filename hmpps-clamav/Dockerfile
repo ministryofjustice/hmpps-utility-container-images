@@ -1,6 +1,7 @@
 FROM centos:latest
 
 ENV CLAM_VERSION=0.104.1
+ENV USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Chrome/96.0.4664.45"
 
 COPY talos.pub /tmp/talos.pub
 
@@ -11,8 +12,8 @@ RUN yum update -y -q
 
 RUN yum install -y -q kubectl libcurl-devel gcc-c++ openssl-devel wget make
 
-RUN wget -nv https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz && \
-    wget -nv https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz.sig &&  \
+RUN wget -nv --user-agent="${USER_AGENT}" https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz && \
+    wget -nv --user-agent="${USER_AGENT}" https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz.sig &&  \
     gpg --import /tmp/talos.pub && \
     gpg --decrypt clamav-${CLAM_VERSION}.tar.gz.sig && \
     tar xzf clamav-${CLAM_VERSION}.tar.gz
