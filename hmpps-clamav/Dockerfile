@@ -1,6 +1,6 @@
 FROM centos:latest
 
-ENV CLAM_VERSION=0.103.2
+ENV CLAM_VERSION=0.104.1
 
 COPY talos.pub /tmp/talos.pub
 
