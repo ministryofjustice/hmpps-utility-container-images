@@ -21,7 +21,7 @@ RUN wget -nv --user-agent="${USER_AGENT}" https://www.clamav.net/downloads/produ
     tar xzf cmake-3.22.0.tar.gz
 
 RUN cd cmake-3.22.0 && \
-    ./bootstrap && make && sudo make install
+    ./bootstrap && make && make install
 
 RUN cd clamav-${CLAM_VERSION} && \
     ./configure && \
