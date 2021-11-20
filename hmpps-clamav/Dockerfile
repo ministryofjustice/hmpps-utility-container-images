@@ -14,9 +14,14 @@ RUN yum install -y -q kubectl libcurl-devel gcc-c++ openssl-devel wget make
 
 RUN wget -nv --user-agent="${USER_AGENT}" https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz && \
     wget -nv --user-agent="${USER_AGENT}" https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz.sig &&  \
+    wget -nv https://cmake.org/files/v3.22/cmake-3.22.0.tar.gz && \
     gpg --import /tmp/talos.pub && \
     gpg --decrypt clamav-${CLAM_VERSION}.tar.gz.sig && \
-    tar xzf clamav-${CLAM_VERSION}.tar.gz
+    tar xzf clamav-${CLAM_VERSION}.tar.gz && \
+    tar xzf cmake-3.22.0.tar.gz
+
+RUN cd cmake-3.22.0 && \
+    ./bootstrap && make && sudo make install
 
 RUN cd clamav-${CLAM_VERSION} && \
     ./configure && \
