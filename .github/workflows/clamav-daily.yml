@@ -78,7 +78,7 @@ jobs:
         with:
           file: ./${{ matrix.dockerfile-dir }}/Dockerfile.freshclammed
           context: ./${{ matrix.dockerfile-dir }}
-          tags: test
+          tags: ${{ steps.meta.outputs.tags }}-test
           labels: ${{ steps.meta.outputs.labels }}
           push: true
 
