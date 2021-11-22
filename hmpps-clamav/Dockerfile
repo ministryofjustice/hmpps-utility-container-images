@@ -67,7 +67,7 @@ RUN mkdir /var/run/clamav && \
 
 USER 1000
 
-RUN freshclam --help && freshclam --no-dns && \
+RUN freshclam --no-dns && \
     freshclam
 
 VOLUME /var/lib/clamav
