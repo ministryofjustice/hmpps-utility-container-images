@@ -1,4 +1,4 @@
-FROM ghcr.io/ministryofjustice/hmpps-clamav:latest-test
+FROM ghcr.io/ministryofjustice/hmpps-clamav:latest
 
 RUN freshclam --no-dns && \
     freshclam
