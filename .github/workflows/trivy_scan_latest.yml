@@ -7,7 +7,7 @@ env:
   REGISTRY: ghcr.io
 jobs:
   trivy_scan_latest:
-    name: Build-Scan-Push
+    name: Trivy-Scan
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

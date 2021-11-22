@@ -1,6 +1,7 @@
 FROM centos:latest
 
-ENV CLAM_VERSION=0.103.2
+ENV CLAM_VERSION=0.104.1
+ENV USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Chrome/96.0.4664.45"
 
 COPY talos.pub /tmp/talos.pub
 
@@ -9,17 +10,36 @@ COPY kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 
 RUN yum update -y -q
 
-RUN yum install -y -q kubectl libcurl-devel gcc-c++ openssl-devel wget make
+# See https://docs.clamav.net/manual/Installing.html
+RUN yum install -y epel-release && \
+  yum install -y dnf-plugins-core && \
+  yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
+  yum config-manager --set-enabled PowerTools | \
+  yum config-manager --set-enabled powertools | true
 
-RUN wget -nv https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz && \
-    wget -nv https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz.sig &&  \
+RUN yum install -y -q kubectl \
+  libcurl-devel gcc-c++ openssl-devel wget make \
+  python3 python3-pip valgrind \
+  bzip2-devel check-devel json-c-devel libcurl-devel libxml2-devel \
+  ncurses-devel openssl-devel pcre2-devel sendmail-devel zlib-devel
+
+RUN wget -nv --user-agent="${USER_AGENT}" https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz && \
+    wget -nv --user-agent="${USER_AGENT}" https://www.clamav.net/downloads/production/clamav-${CLAM_VERSION}.tar.gz.sig &&  \
+    wget -nv https://cmake.org/files/v3.22/cmake-3.22.0.tar.gz && \
     gpg --import /tmp/talos.pub && \
     gpg --decrypt clamav-${CLAM_VERSION}.tar.gz.sig && \
-    tar xzf clamav-${CLAM_VERSION}.tar.gz
+    tar xzf clamav-${CLAM_VERSION}.tar.gz && \
+    tar xzf cmake-3.22.0.tar.gz
+
+RUN cd cmake-3.22.0 && \
+    ./bootstrap && make && make install
 
 RUN cd clamav-${CLAM_VERSION} && \
-    ./configure && \
-    make && make install
+    mkdir build && cd build && \
+    cmake .. && \
+    cmake --build . && \
+    ctest && \
+    cmake --build . --target install
 
 RUN rm -rf /clamav-${CLAM_VERSION} && \
     rm -rf /tmp/talos.pub && \
@@ -47,7 +67,7 @@ RUN mkdir /var/run/clamav && \
 
 USER 1000
 
-RUN freshclam --no-dns && \
+RUN freshclam --help && freshclam --no-dns && \
     freshclam
 
 VOLUME /var/lib/clamav

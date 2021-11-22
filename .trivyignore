@@ -1,4 +1,2 @@
-# Waiting on updated helm https://github.com/helm/helm/issues/9956
-CVE-2019-19921
-CVE-2019-16884
-CVE-2017-11468
+# Waiting on https://github.com/helm/helm/issues/10314
+CVE-2021-41092
