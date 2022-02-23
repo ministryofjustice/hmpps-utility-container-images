@@ -1,4 +1,4 @@
-FROM centos:latest
+FROM rockylinux:latest
 
 ENV CLAM_VERSION=0.104.2
 ENV USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Chrome/98.0.4758.102"

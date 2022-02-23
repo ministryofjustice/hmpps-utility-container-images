@@ -32,4 +32,3 @@ RUN addgroup --gid 2000 --system appgroup && \
 USER 2000
 
 CMD /bin/bash
-
