@@ -51,19 +51,9 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-
       - name: Push container image to repository
-        # Only push to repo if - Trivy scan passed & on main branch
-        if: ${{ success() && github.ref == 'refs/heads/main' }}
+        # Only push to repo if on main branch
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: docker/build-push-action@v2
         with:
           context: ./${{ matrix.dockerfile-dir }}

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # bootstrap clam av service and clam av database updater
 set -m
 
@@ -24,8 +24,8 @@ function process_file() {
     fi
 }
 
-process_file "${CLAMD_SETTINGS_CSV}" /usr/local/etc/clamd.conf
-process_file "${FRESHCLAM_SETTINGS_CSV}" /usr/local/etc/freshclam.conf
+process_file "${CLAMD_SETTINGS_CSV}" /etc/clamav/clamd.conf
+process_file "${FRESHCLAM_SETTINGS_CSV}" /etc/clamav/freshclam.conf
 
 # initialise av database
 freshclam --no-dns
