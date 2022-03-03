@@ -1,7 +1,6 @@
 FROM ghcr.io/ministryofjustice/hmpps-clamav:latest
 
-RUN freshclam --no-dns && \
-    freshclam
+RUN freshclam
 
 EXPOSE 3310
 

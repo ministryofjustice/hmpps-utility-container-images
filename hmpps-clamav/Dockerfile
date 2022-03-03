@@ -6,7 +6,7 @@ COPY --chown=clamav:clamav ./*.conf /etc/clamav
 COPY --chown=clamav:clamav eicar.com /
 COPY --chown=clamav:clamav ./readyness.sh /
 
-RUN freshclam --no-dns && freshclam
+RUN freshclam
 
 VOLUME /var/lib/clamav
 
