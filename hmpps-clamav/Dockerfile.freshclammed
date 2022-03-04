@@ -1,7 +1,9 @@
 FROM ghcr.io/ministryofjustice/hmpps-clamav:latest
 
+USER "root"
 RUN freshclam
 
 EXPOSE 3310
+USER "clamav"
 
 CMD ["clamd"]

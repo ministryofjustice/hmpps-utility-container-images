@@ -13,5 +13,6 @@ VOLUME /var/lib/clamav
 COPY --chown=clamav:clamav docker-entrypoint.sh /
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
+USER "clamav"
 
 EXPOSE 3310
