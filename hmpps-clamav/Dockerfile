@@ -1,6 +1,14 @@
 FROM clamav/clamav:stable_base
 
-COPY kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+# Install kubectl - needed for our daily reload cronjob
+ENV KUBECTL_VERSION=v1.20.15
+RUN apk update && \
+  apk add --no-cache curl && \
+  curl -LO "https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl" && \
+  curl -LO "https://dl.k8s.io/$KUBECTL_VERSION/bin/linux/amd64/kubectl.sha256" && \
+  echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c && \
+  chmod +x kubectl && \
+  mv kubectl /usr/local/bin/kubectl
 
 COPY --chown=clamav:clamav ./*.conf /etc/clamav
 COPY --chown=clamav:clamav eicar.com /
