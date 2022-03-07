@@ -24,7 +24,7 @@ COPY --chown=clamav:clamav docker-entrypoint.sh /
 RUN mkdir -p /var/run/clamav && \
   chown -R 1000:1000 /var/run/clamav && \
   chown -R 1000:1000 /var/lib/clamav
-USER 1000
+USER 1000:1000
 
 EXPOSE 3310
 
