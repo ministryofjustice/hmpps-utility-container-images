@@ -1,9 +1,13 @@
 FROM ghcr.io/ministryofjustice/hmpps-clamav:latest
 
-USER "root"
+USER root
+RUN chown -R clamav:clamav /var/lib/clamav
+
+USER clamav
 RUN freshclam
 
 # We run as UID 1000 in kubernetes, this will allow us to start the process
+USER root
 RUN mkdir -p /var/run/clamav && \
   chown -R 1000:1000 /var/run/clamav && \
   chown -R 1000:1000 /var/lib/clamav
