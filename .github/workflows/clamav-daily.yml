@@ -1,5 +1,6 @@
 name: Twice daily build ClamAV with up-to-date virus DB
 on:
+  push:
   schedule:
     - cron:  '0 4/12 * * *'
 env:
