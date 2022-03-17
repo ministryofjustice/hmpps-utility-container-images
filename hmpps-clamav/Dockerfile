@@ -3,6 +3,7 @@ FROM clamav/clamav:stable_base
 # Install kubectl - needed for our daily reload cronjob
 ENV KUBECTL_VERSION=v1.20.15
 RUN apk update && \
+    apk upgrade && \
   apk add --no-cache curl && \
   curl -LO "https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl" && \
   curl -LO "https://dl.k8s.io/$KUBECTL_VERSION/bin/linux/amd64/kubectl.sha256" && \
