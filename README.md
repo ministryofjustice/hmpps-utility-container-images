@@ -8,3 +8,9 @@ These images are built in github actions see `.github/workflows/docker-build-pus
 | `hmpps-mssql-tools` | contains mssql-tools and az cli. For sqlserver db refresh jobs | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-mssql-tools> |
 | `hmpps-clamav` | ClamAV base image, see README in folder | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-clamav> |
 | `hmpps-clamav-freshclammed` | ClamAV image, twice daily updated virus DB, see README in folder | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-clamav-freshclammed> |
+
+## Trivy Scan
+
+We have a scheduled trivy scan [github action](/.github/workflows/trivy_scan_latest.yml) which runs every week day.
+
+Vulnerability failures can often be resolved by pushing an empty commit which will bump/refresh the container builds.
