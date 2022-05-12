@@ -60,6 +60,7 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+          timeout: 15m
 
       - name: Push container image to repository
         if: ${{ success() && github.ref == 'refs/heads/main' }}
