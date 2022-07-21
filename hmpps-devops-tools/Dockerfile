@@ -5,7 +5,7 @@ ENV \
   KUBECTL_VERSION=1.20.15
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
-    && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie \
+    && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie postgresql-client \
     && locale-gen en_GB.UTF-8 \
     && ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
