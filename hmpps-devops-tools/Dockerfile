@@ -5,7 +5,7 @@ ENV \
   KUBECTL_VERSION=1.20.15
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
-    && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie postgresql-client \
+    && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie \
     && locale-gen en_GB.UTF-8 \
     && ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
@@ -25,6 +25,10 @@ RUN curl -sLo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-r
     && chmod +x /usr/local/bin/kubectl
 
 RUN curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar xz && mv linux-amd64/helm /bin/helm && rm -rf linux-amd64
+
+RUN curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/postgresql.asc.gpg > /dev/null \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list \
+    && apt update && apt install  --no-install-recommends -qy postgresql-client-14
 
 RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser --gid 2000
