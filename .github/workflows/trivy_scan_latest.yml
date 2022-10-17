@@ -24,7 +24,7 @@ jobs:
     steps:
       # Need to checkout the repo to get the .trivyignore file
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -40,7 +40,7 @@ jobs:
       - name: Slack notification
         id: slack
         if: ${{ failure() }}
-        uses: slackapi/slack-github-action@v1.14.0
+        uses: slackapi/slack-github-action@v1.21.0
         with:
           channel-id: 'hmpps_tech_alerts_security'
           slack-message: "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|View on github>\n"
