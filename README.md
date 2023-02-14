@@ -12,6 +12,8 @@ These images are built in github actions see `.github/workflows/docker-build-pus
 
 ## Trivy Scan
 
-We have a scheduled trivy scan [github action](/.github/workflows/trivy_scan_latest.yml) which runs every week day.
+We have a scheduled Trivy scan [GitHub Action](/.github/workflows/trivy_scan_latest.yml) which runs every week day.
 
 Vulnerability failures can often be resolved by pushing an empty commit which will bump/refresh the container builds.
+
+This also has the benefit of creating activity in the repository, as GitHub has the [policy of disabling scheduled workflows after 60 days of inactivity](https://docs.github.com/en/actions/managing-workflow-runs/disabling-and-enabling-a-workflow). See [Slack thread](https://mojdt.slack.com/archives/C69NWE339/p1676032009950009) discussing this.
