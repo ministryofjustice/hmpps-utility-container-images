@@ -2,7 +2,7 @@ FROM python:3.10-slim-bullseye
 
 ENV \
   HELM_VERSION=3.11.2 \
-  KUBECTL_VERSION=1.20.15
+  KUBECTL_VERSION=1.23.17
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie \
