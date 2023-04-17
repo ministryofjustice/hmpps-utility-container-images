@@ -1,4 +1,2 @@
 # Waiting on https://github.com/helm/helm/pull/11384
 CVE-2022-27664
-# See https://github.com/helm/helm/issues/11542
-CVE-2022-32149
