@@ -1,5 +1,6 @@
 name: Trivy Scan Images
 on:
+  workflow_dispatch:
   # Run Trivy Scan every week day
   schedule:
     - cron:  '0 7 * * 1-5'
@@ -26,7 +27,7 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner (table output)
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:latest
@@ -46,3 +47,23 @@ jobs:
           slack-message: "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|View on github>\n"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
+
+      - name: Run Trivy vulnerability scanner (sarif output)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:latest
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
+          limit-severities-for-sarif: true
+          timeout: 15m
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
