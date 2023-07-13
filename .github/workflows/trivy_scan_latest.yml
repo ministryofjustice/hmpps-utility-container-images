@@ -60,7 +60,7 @@ jobs:
           exit-code: '1'
           format: 'sarif'
           output: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
-          trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
+          #trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
           limit-severities-for-sarif: true
           timeout: 15m
 
