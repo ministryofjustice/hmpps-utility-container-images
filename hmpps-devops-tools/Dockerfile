@@ -31,7 +31,7 @@ RUN curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor 
     && apt update && apt install --no-install-recommends -qy postgresql-client-15
 
 RUN addgroup --gid 2000 --system appgroup && \
-    adduser --uid 2000 --system appuser --gid 2000
+    adduser --uid 2000 --system appuser --gid 2000 --home /home/appuser
 
 USER 2000
 
