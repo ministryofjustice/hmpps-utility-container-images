@@ -1,5 +1,6 @@
 name: Trivy Scan Images
 on:
+  push:
   workflow_dispatch:
   # Run Trivy Scan every week day
   schedule:
@@ -35,7 +36,9 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
+          scanners: 'vuln'
           severity: 'CRITICAL,HIGH'
+          #trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
           timeout: 15m
 
       - name: Slack notification
@@ -55,6 +58,7 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:latest
           ignore-unfixed: true
           vuln-type: 'os,library'
+          scanners: 'vuln'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
           format: 'sarif'
