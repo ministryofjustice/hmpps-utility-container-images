@@ -1,8 +1,8 @@
 FROM python:3-slim-bookworm
 
 ENV \
-  HELM_VERSION=3.12.1 \
-  KUBECTL_VERSION=1.23.17
+  HELM_VERSION=3.13.3 \
+  KUBECTL_VERSION=1.26.12
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie dnsutils apache2-utils \
@@ -28,7 +28,7 @@ RUN curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar x
 
 RUN curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/postgresql.asc.gpg > /dev/null \
     && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list \
-    && apt update && apt install --no-install-recommends -qy postgresql-client-15
+    && apt update && apt install --no-install-recommends -qy postgresql-client-16
 
 RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser --gid 2000 --home /home/appuser
