@@ -9,6 +9,7 @@ These images are built in github actions see `.github/workflows/docker-build-pus
 | `hmpps-mysql-tools` | contains mysql-client and aws cli. For mysql db refresh jobs, runs as non-root | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-mysql-tools>         |
 | `hmpps-clamav` | ClamAV base image, see README in folder | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-clamav> |
 | `hmpps-clamav-freshclammed` | ClamAV image, twice daily updated virus DB, see README in folder | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-clamav-freshclammed> |
+| `hmpps-python-deps` | Python install with dependencies for running python scripts | <https://github.com/ministryofjustice/hmpps-utility-container-images/pkgs/container/hmpps-python-deps> |
 
 ## Trivy Scan
 

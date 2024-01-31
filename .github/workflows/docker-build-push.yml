@@ -18,6 +18,7 @@ jobs:
           - hmpps-mssql-tools
           - hmpps-mysql-tools
           - hmpps-clamav
+          - hmpps-python-deps
     permissions:
       packages: write
       contents: read
