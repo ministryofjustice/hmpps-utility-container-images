@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata unzip curl ca-certificates mysql-client \
     && locale-gen en_GB.UTF-8 \
-    && ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime \
+    && ln -fs /usr/share/zoneinfo/UTC /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /.cache/*

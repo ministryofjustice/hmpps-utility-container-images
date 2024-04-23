@@ -7,7 +7,7 @@ ENV \
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie dnsutils apache2-utils \
     && locale-gen en_GB.UTF-8 \
-    && ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime \
+    && ln -fs /usr/share/zoneinfo/UTC /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /.cache/*
