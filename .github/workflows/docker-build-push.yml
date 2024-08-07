@@ -17,6 +17,8 @@ jobs:
           - hmpps-devops-tools
           - hmpps-mssql-tools
           - hmpps-mysql-tools
+          - hmpps-wiremock
+          - hmpps-localstack
           - hmpps-clamav
           - hmpps-python-deps
     permissions:
