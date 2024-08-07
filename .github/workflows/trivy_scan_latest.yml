@@ -19,6 +19,8 @@ jobs:
           - hmpps-mssql-tools
           - hmpps-mysql-tools
           - hmpps-clamav
+          - hmpps-wiremock
+          - hmpps-localstack
     permissions:
       packages: write
       contents: read
