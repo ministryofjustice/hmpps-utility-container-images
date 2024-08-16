@@ -1,7 +1,7 @@
 FROM clamav/clamav:stable_base
 
 # Install kubectl - needed for our daily reload cronjob
-ENV KUBECTL_VERSION=v1.20.15
+ENV KUBECTL_VERSION=v1.29.7
 RUN apk update && \
     apk upgrade && \
     # Remediation: CVE-2023-38545 
