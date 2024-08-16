@@ -48,7 +48,7 @@ jobs:
         if: ${{ failure() }}
         uses: slackapi/slack-github-action@v1.23.0
         with:
-          channel-id: 'hmpps_tech_alerts_security'
+          channel-id: 'hmpps-sre-alerts'
           slack-message: "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|View on github>\n"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
