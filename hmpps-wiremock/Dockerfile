@@ -1,4 +1,4 @@
-FROM wiremock/wiremock:latest
+FROM wiremock/wiremock:3.9.1
 RUN addgroup --gid 2000 --system wiremock && adduser --uid 2000 --system wiremock --gid 2000
 
 COPY --chown=wiremock:wiremock wiremock /home/wiremock
