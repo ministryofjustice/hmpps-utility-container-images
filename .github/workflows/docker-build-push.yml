@@ -21,6 +21,7 @@ jobs:
           - hmpps-localstack
           - hmpps-clamav
           - hmpps-python-deps
+          - hmpps-github-actions-runner
     permissions:
       packages: write
       contents: read
