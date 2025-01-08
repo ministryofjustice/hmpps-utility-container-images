@@ -12,6 +12,7 @@ These images are built in github actions see `.github/workflows/docker-build-pus
 | `hmpps-clamav`              | ClamAV base image, see README in folder                                                              | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-clamav>                  |
 | `hmpps-clamav-freshclammed` | ClamAV image, twice daily updated virus DB, see README in folder                                     | <https://github.com/ministryofjustice/hmpps-tools-images/pkgs/container/hmpps-clamav-freshclammed>     |
 | `hmpps-python-deps`         | Python install with dependencies for running python scripts                                          | <https://github.com/ministryofjustice/hmpps-utility-container-images/pkgs/container/hmpps-python-deps> |
+| `hmpps-github-actions-runner`  | Github self-hosted runner image for use by hmpps github actions that need to run with CP cluster. | <https://github.com/ministryofjustice/hmpps-utility-container-images/pkgs/container/hmpps-github-actions-runner> |
 
 ## Trivy Scan
 
