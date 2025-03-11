@@ -36,6 +36,7 @@ RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmo
 # Make version 16 the default for now.
 ENV PATH="/usr/lib/postgresql/16/bin:$PATH"
 
+
 RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser --gid 2000 --home /home/appuser
 
