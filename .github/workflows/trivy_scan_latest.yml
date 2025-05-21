@@ -1,6 +1,8 @@
 name: Trivy Scan Images
 on:
   push:
+    branches:
+      - main
   workflow_dispatch:
   # Run Trivy Scan every week day
   schedule:
