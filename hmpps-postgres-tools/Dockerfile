@@ -1,9 +1,5 @@
 FROM python:3-slim-bookworm
 
-ENV \
-  HELM_VERSION=3.16.1 \
-  KUBECTL_VERSION=1.29.9
-
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata jq curl httpie lsb-release gnupg \
     && locale-gen en_GB.UTF-8 \
