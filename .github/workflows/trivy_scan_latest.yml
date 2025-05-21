@@ -28,9 +28,10 @@ jobs:
     steps:
       # Need to checkout the repo to get the .trivyignore file
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner (table output)
+        id: trivy-vuln-scan
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:latest
@@ -42,11 +43,12 @@ jobs:
           severity: 'CRITICAL,HIGH'
           #trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
           timeout: 15m
+        continue-on-error: true
 
       - name: Slack notification
         id: slack
-        if: ${{ failure() }}
-        uses: slackapi/slack-github-action@v1.23.0
+        if: ${{ steps.trivy-vuln-scan.outcome }} == 'failure'
+        uses: slackapi/slack-github-action@v1.27.0
         with:
           channel-id: 'hmpps-sre-alerts-nonprod'
           slack-message: "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|View on github>\n"
@@ -70,7 +72,7 @@ jobs:
           timeout: 15m
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
