@@ -1,6 +1,13 @@
 name: Trivy Scan Images
 on:
   workflow_dispatch:
+  workflow_run:
+    types:
+      - completed
+    branches:
+      - main
+    workflows:
+      - docker-build-push
   # Run Trivy Scan every week day
   schedule:
     - cron:  '0 7 * * 1-5'
