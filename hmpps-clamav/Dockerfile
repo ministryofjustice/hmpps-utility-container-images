@@ -6,7 +6,7 @@ RUN apk update && \
     apk upgrade && \
     # Remediation: CVE-2023-38545 
     apk add --no-cache 'curl>8.4.0' && \
-    curl -LO "https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl" && \
+    curl -LO "https://dl.k8s.io/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl" && \
     curl -LO "https://dl.k8s.io/$KUBECTL_VERSION/bin/linux/amd64/kubectl.sha256" && \
     echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c && \
     chmod +x kubectl && \
