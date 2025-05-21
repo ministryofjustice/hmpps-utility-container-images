@@ -2,13 +2,7 @@ name: Build Container Images
 on:
   push:
   workflow_dispatch:
-  workflow_run:
-    types:
-      - completed
-    branches:
-      - main
-    workflows:
-      - 'Trivy Scan Images'
+
 env:
   REGISTRY: ghcr.io
 jobs:
