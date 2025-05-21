@@ -1,6 +1,8 @@
 name: Trivy Scan Images
 on:
   push:
+    branches:
+      - main
   workflow_dispatch:
   # Run Trivy Scan every week day
   schedule:
@@ -18,6 +20,7 @@ jobs:
           - hmpps-devops-tools
           - hmpps-mssql-tools
           - hmpps-mysql-tools
+          - hmpps-postgres-tools
           - hmpps-clamav
           - hmpps-wiremock
           - hmpps-localstack

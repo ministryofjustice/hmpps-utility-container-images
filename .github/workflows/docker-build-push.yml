@@ -17,6 +17,7 @@ jobs:
           - hmpps-devops-tools
           - hmpps-mssql-tools
           - hmpps-mysql-tools
+          - hmpps-postgres-tools
           - hmpps-wiremock
           - hmpps-localstack
           - hmpps-clamav
