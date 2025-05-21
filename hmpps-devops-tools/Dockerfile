@@ -1,8 +1,8 @@
 FROM python:3-slim-bookworm
 
 ENV \
-  HELM_VERSION=3.16.1 \
-  KUBECTL_VERSION=1.29.9
+  HELM_VERSION=3.18.0 \
+  KUBECTL_VERSION=1.31.9
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie dnsutils apache2-utils \
