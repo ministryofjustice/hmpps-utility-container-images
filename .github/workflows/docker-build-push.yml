@@ -2,6 +2,8 @@ name: Build Container Images
 on:
   push:
   workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * 1-5' # Every weekday at 5am UTC
 
 env:
   REGISTRY: ghcr.io
@@ -67,6 +69,40 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+
+      - name: Run Trivy vulnerability scanner (table output)
+        id: trivy-vuln-scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:latest
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          scanners: 'vuln'
+          severity: 'CRITICAL,HIGH'
+          #trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
+          timeout: 15m
+
+      - name: Run Trivy vulnerability scanner (sarif output)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          scanners: 'vuln'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+          format: 'sarif'
+          output: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
+          #trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
+          limit-severities-for-sarif: true
+          timeout: 15m
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
 
       - name: Slack notification
         id: slack

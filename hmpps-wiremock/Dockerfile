@@ -1,4 +1,4 @@
-FROM wiremock/wiremock:3.13.0
+FROM wiremock/wiremock:nightly
 
 RUN apt-get update && \
     apt-get upgrade -y && \
