@@ -33,8 +33,8 @@ RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmo
     && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list \
     && apt update && apt install --no-install-recommends -qy postgresql-client-17 postgresql-client-16 postgresql-client-15
 
-# Make version 16 the default for now.
-ENV PATH="/usr/lib/postgresql/16/bin:$PATH"
+# Make version 17 the default for now.
+ENV PATH="/usr/lib/postgresql/17/bin:$PATH"
 
 
 RUN addgroup --gid 2000 --system appgroup && \
