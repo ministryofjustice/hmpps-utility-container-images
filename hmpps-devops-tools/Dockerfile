@@ -31,7 +31,7 @@ RUN curl -fsSL https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | ta
 
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/postgresql.asc.gpg > /dev/null \
     && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list \
-    && apt update && apt install --no-install-recommends -qy postgresql-client-17 postgresql-client-16 postgresql-client-15
+    && apt update && apt install --no-install-recommends -qy postgresql-client-18 postgresql-client-17 postgresql-client-16 postgresql-client-15
 
 # Make version 16 the default for now.
 ENV PATH="/usr/lib/postgresql/16/bin:$PATH"
