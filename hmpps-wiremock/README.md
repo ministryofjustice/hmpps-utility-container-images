@@ -39,3 +39,38 @@ You can pass `WIREMOCK_REPOS` as a JSON array of repositories, branches, and pat
     "path": "wiremock"
   }
 ]
+```
+
+
+### Spinning up as an extra container in a helm deployment
+To spin this up alongside your service, simply add 
+
+```
+   extraContainers:
+    - name: wiremock
+      image: "ghcr.io/ministryofjustice/hmpps-wiremock:latest"
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: WIREMOCK_REPOS
+          value: |-
+            [
+              {
+                "repoUrl": "https://github.com/ministryofjustice/hmpps-education-and-work-plan-ui",
+                "branch": "main",
+                "path": "wiremock"
+              },
+              {
+                "repoUrl": "https://github.com/ministryofjustice/hmpps-approved-premises-api",
+                "branch": "main",
+                "path": "wiremock"
+              }
+            ]
+      ports:
+        - name: http
+          containerPort: 8090
+          protocol: TCP
+```
+to your `values-dev.yml`'s `generic-service` section. Then update any API urls to be `wiremock:8090`. 
+Obviously replace the example wiremock repo's with those relevant to your project.
+
+
