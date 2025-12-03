@@ -29,11 +29,11 @@ jobs:
       security-events: write
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}
           flavor: |
@@ -45,14 +45,14 @@ jobs:
             type=ref,event=pr
             type=sha
       - name: Log in to GitHub container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build container image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./${{ matrix.dockerfile-dir }}
           pull: true
@@ -63,7 +63,7 @@ jobs:
       - name: Push container image to repository
         # Only push to repo if on main branch
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./${{ matrix.dockerfile-dir }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -104,7 +104,7 @@ jobs:
       - name: Upload Trivy scan results to GitHub Security tab
         # Only push results if on main branch.
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
 
