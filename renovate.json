@@ -1,0 +1,33 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>ministryofjustice/hmpps-renovate-config"],
+  "labels": ["dependencies"],
+  "regexManagers": [
+    {
+      "fileMatch": ["hmpps-devops-tools/Dockerfile"],
+      "matchStrings": ["HELM_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "helm/helm",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "fileMatch": ["hmpps-devops-tools/Dockerfile", "hmpps-clamav/Dockerfile"],
+      "matchStrings": ["KUBECTL_VERSION=(?<currentValue>\\d+\\.\\d+\\.?\\d*)"],
+      "depNameTemplate": "kubernetes/kubernetes",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.*)$",
+      "versioningTemplate": "loose"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["dockerfile"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "fileMatch": ["^\\.github/workflows/.*\\.yml$"]
+    }
+  ]
+}
