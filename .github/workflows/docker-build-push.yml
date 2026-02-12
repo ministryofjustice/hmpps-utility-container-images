@@ -16,6 +16,7 @@ jobs:
       matrix:
         dockerfile-dir:
           - hmpps-devops-tools
+          - hmpps-jdk-debug
           - hmpps-mssql-tools
           - hmpps-mysql-tools
           - hmpps-postgres-tools
