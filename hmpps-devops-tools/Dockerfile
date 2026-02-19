@@ -1,7 +1,7 @@
 FROM python:3-slim-bookworm
 
 ENV \
-  HELM_VERSION=3.18.4 \
+  HELM_VERSION=3.20.0 \
   KUBECTL_VERSION=1.32
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
