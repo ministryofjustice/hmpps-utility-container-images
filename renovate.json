@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>ministryofjustice/hmpps-renovate-config"],
+  "extends": ["github>ministryofjustice/hmpps-renovate-config:base"],
   "labels": ["dependencies"],
   "regexManagers": [
     {
