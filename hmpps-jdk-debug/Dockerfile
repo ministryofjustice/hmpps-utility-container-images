@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jdk-jammy
+FROM eclipse-temurin:25.0.2_10-jdk-jammy
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata curl jq procps \
