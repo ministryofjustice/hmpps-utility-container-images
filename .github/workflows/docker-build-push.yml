@@ -114,7 +114,10 @@ jobs:
         if: ${{ failure() }}
         uses: slackapi/slack-github-action@v2.1.1
         with:
-          channel-id: ${{ secrets.SLACK_GITHUB_ALERTS }}
-          slack-message: "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|View on github>\n"
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
+          method: chat.postMessage
+          token: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "${{ vars.SLACK_GITHUB_ALERTS }}",
+              "text": "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View on github>\n"
+            }
