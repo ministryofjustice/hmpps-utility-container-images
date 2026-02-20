@@ -26,8 +26,34 @@
       "enabled": false
     },
     {
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["patch"],
+      "enabled": false
+    },
+    {
+      "matchDepNames": ["helm/helm"],
+      "matchUpdateTypes": ["patch"],
+      "enabled": false
+    },
+    {
+      "matchDepNames": ["helm/helm"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "matchDepNames": ["kubernetes/kubernetes"],
+      "matchUpdateTypes": ["patch"],
+      "enabled": false
+    },
+    {
+      "matchDepNames": ["kubernetes/kubernetes"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
       "matchManagers": ["github-actions"],
-      "fileMatch": ["^\\.github/workflows/.*\\.yml$"]
+      "matchFileNames": ["**/.github/workflows/**/*.ya?ml"],
+      "separateMinorPatch": true
     }
   ]
 }
