@@ -32,17 +32,7 @@
     },
     {
       "matchDepNames": ["helm/helm"],
-      "matchUpdateTypes": ["patch"],
-      "enabled": false
-    },
-    {
-      "matchDepNames": ["helm/helm"],
       "matchUpdateTypes": ["major"],
-      "enabled": false
-    },
-    {
-      "matchDepNames": ["kubernetes/kubernetes"],
-      "matchUpdateTypes": ["patch"],
       "enabled": false
     },
     {
