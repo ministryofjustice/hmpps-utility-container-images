@@ -111,7 +111,7 @@ jobs:
 
       - name: Slack notification
         id: slack
-        if: ${{ failure() }}
+        # if: ${{ failure() }}
         uses: slackapi/slack-github-action@v2.1.1
         with:
           method: chat.postMessage
