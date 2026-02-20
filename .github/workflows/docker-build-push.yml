@@ -110,7 +110,7 @@ jobs:
           sarif_file: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
 
       - name: Prepare Slack failure summary
-        # if: ${{ failure() }}
+        if: ${{ failure() && github.ref == 'refs/heads/main' }}
         run: |
           cat << 'EOF' > slack-results.txt
           Job: ${{ github.job }}
@@ -123,7 +123,7 @@ jobs:
 
       - name: Slack notification
         id: slack
-        # if: ${{ failure() }}
+        if: ${{ failure() && github.ref == 'refs/heads/main' }}
         uses: ministryofjustice/hmpps-github-actions/.github/actions/slack_failure_results@v2
         with:
           input_file: slack-results.txt
