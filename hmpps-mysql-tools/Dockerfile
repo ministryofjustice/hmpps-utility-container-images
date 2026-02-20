@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata unzip curl ca-certificates mysql-client \
@@ -10,11 +10,12 @@ RUN apt-get clean && apt-get update && apt-get upgrade -y \
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
-    && ./aws/install
+    && ./aws/install \
+    && rm -rf awscliv2.zip aws
 
-RUN addgroup --gid 2000 --system appgroup \
-    && adduser --uid 2000 --system appuser --gid 2000
+RUN groupadd --gid 2000 --system appgroup \
+    && useradd --uid 2000 --system --gid 2000 --home-dir /home/appuser --create-home appuser
 
 USER 2000
 
-CMD /bin/bash
+CMD ["/bin/bash"]

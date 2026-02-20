@@ -1,8 +1,8 @@
 FROM python:3-slim-bookworm
 
 ENV \
-  HELM_VERSION=3.18.4 \
-  KUBECTL_VERSION=1.32
+  HELM_VERSION=4.1.1 \
+  KUBECTL_VERSION=1.33.8
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie dnsutils apache2-utils \
@@ -21,8 +21,8 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
     && apt-get update \
     && apt-get install --no-install-recommends -qy azure-cli
 
-RUN curl -fsSLO "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable-${KUBECTL_VERSION}.txt)/bin/linux/amd64/kubectl" && \
-    curl -fsSLO "https://dl.k8s.io/$(curl -fsSL https://dl.k8s.io/release/stable-${KUBECTL_VERSION}.txt)/bin/linux/amd64/kubectl.sha256" && \
+RUN curl -fsSLO "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" && \
+    curl -fsSLO "https://dl.k8s.io/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256" && \
     echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c && \
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/kubectl
@@ -31,7 +31,7 @@ RUN curl -fsSL https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | ta
 
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/postgresql.asc.gpg > /dev/null \
     && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list \
-    && apt update && apt install --no-install-recommends -qy postgresql-client-17 postgresql-client-16 postgresql-client-15
+    && apt update && apt install --no-install-recommends -qy postgresql-client-18 postgresql-client-17 postgresql-client-16 postgresql-client-15
 
 # Make version 17 the default for now.
 ENV PATH="/usr/lib/postgresql/17/bin:$PATH"
