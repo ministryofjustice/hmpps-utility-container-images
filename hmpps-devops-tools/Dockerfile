@@ -2,7 +2,7 @@ FROM python:3-slim-bookworm
 
 ENV \
   HELM_VERSION=4.1.1 \
-  KUBECTL_VERSION=1.33
+  KUBECTL_VERSION=1.33.8
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie dnsutils apache2-utils \
@@ -21,8 +21,8 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
     && apt-get update \
     && apt-get install --no-install-recommends -qy azure-cli
 
-RUN curl -fsSLO "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable-${KUBECTL_VERSION}.txt)/bin/linux/amd64/kubectl" && \
-    curl -fsSLO "https://dl.k8s.io/$(curl -fsSL https://dl.k8s.io/release/stable-${KUBECTL_VERSION}.txt)/bin/linux/amd64/kubectl.sha256" && \
+RUN curl -fsSLO "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" && \
+    curl -fsSLO "https://dl.k8s.io/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256" && \
     echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c && \
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/kubectl
