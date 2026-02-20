@@ -109,15 +109,23 @@ jobs:
         with:
           sarif_file: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
 
+      - name: Prepare Slack failure summary
+        # if: ${{ failure() }}
+        run: |
+          cat << 'EOF' > slack-results.txt
+          Job: ${{ github.job }}
+          Status: ${{ job.status }}
+          Workflow: ${{ github.workflow }}
+          Repo: ${{ github.repository }}
+          Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          Matrix dockerfile-dir: ${{ matrix.dockerfile-dir }}
+          EOF
+
       - name: Slack notification
         id: slack
         # if: ${{ failure() }}
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: ministryofjustice/hmpps-github-actions/.github/actions/slack_failure_results@v2
         with:
-          method: chat.postMessage
-          token: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
-          payload: |
-            {
-              "channel": "${{ vars.SLACK_GITHUB_ALERTS }}",
-              "text": "_Job:_ ${{ github.job }}\n_Status:_ ${{ job.status }}\n_Workflow:_ ${{ github.workflow }}\n_Repo:_ ${{ github.repository }}\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View on github>\n"
-            }
+          input_file: slack-results.txt
+          channel_id: ${{ vars.SLACK_GITHUB_ALERTS }}
+          SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
