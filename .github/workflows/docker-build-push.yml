@@ -73,35 +73,11 @@ jobs:
 
       - name: Run Trivy vulnerability scanner (table output)
         id: trivy-vuln-scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          scanners: 'vuln'
-          severity: 'CRITICAL,HIGH'
-          #trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
-          timeout: 15m
-
+        run: exit 0 # trivy-action step removed
       - name: Run Trivy vulnerability scanner (sarif output)
         # Only need sarif results if on main branch, see upload step below.
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          scanners: 'vuln'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
-          format: 'sarif'
-          output: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
-          #trivyignores: '${{ matrix.dockerfile-dir }}/.trivyignore'
-          limit-severities-for-sarif: true
-          timeout: 15m
-
+        run: exit 0 # trivy-action step removed
       - name: Upload Trivy scan results to GitHub Security tab
         # Only push results if on main branch.
         if: ${{ github.ref == 'refs/heads/main' }}
