@@ -71,20 +71,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           push: true
 
-      - name: Run Trivy vulnerability scanner (table output)
-        id: trivy-vuln-scan
-        run: exit 0 # trivy-action step removed
-      - name: Run Trivy vulnerability scanner (sarif output)
-        # Only need sarif results if on main branch, see upload step below.
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: exit 0 # trivy-action step removed
-      - name: Upload Trivy scan results to GitHub Security tab
-        # Only push results if on main branch.
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: '${{ matrix.dockerfile-dir }}/trivy-results.sarif'
-
       - name: Prepare Slack failure summary
         if: ${{ failure() && github.ref == 'refs/heads/main' }}
         run: |
