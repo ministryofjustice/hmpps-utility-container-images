@@ -46,14 +46,14 @@ jobs:
             type=ref,event=pr
             type=sha
       - name: Log in to GitHub container registry
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build container image
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7
         with:
           context: ./${{ matrix.dockerfile-dir }}
           pull: true
@@ -64,7 +64,7 @@ jobs:
       - name: Push container image to repository
         # Only push to repo if on main branch
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7
         with:
           context: ./${{ matrix.dockerfile-dir }}
           tags: ${{ steps.meta.outputs.tags }}
