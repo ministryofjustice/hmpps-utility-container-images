@@ -86,7 +86,7 @@ jobs:
       - name: Slack notification
         id: slack
         if: ${{ failure() && github.ref == 'refs/heads/main' }}
-        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/slack_failure_results@6ca6653862e916a9221d915216228aee57717570 # v2
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/slack_failure_results@v1
         with:
           input_file: slack-results.txt
           channel_id: ${{ vars.SLACK_GITHUB_ALERTS }}
