@@ -8,8 +8,8 @@ RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /.cache/*
 
-RUN pip install --upgrade pip \
-    && pip install --no-cache-dir awscli aws-shell awscli-login boto3 botocore wheel urllib3
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir awscli aws-shell awscli-login
 
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/postgresql.asc.gpg > /dev/null \
     && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list \
