@@ -17,9 +17,21 @@ inputs:
   slack_token:
     description: Slack bot token for failure notifications.
     required: true
-  slack_channel:
-    description: Slack channel ID for failure notifications.
+  channel_id:
+    description: Slack channel ID for failure notifications. Set to NO_SLACK to disable.
     required: true
+  subproject:
+    description: Subproject name used in Slack notification.
+    required: false
+    default: ""
+  scan_type:
+    description: Scan context used in Slack notification.
+    required: false
+    default: container-image
+  slack_include_summary:
+    description: Include Snyk summary in Slack message when available.
+    required: false
+    default: "false"
   workflow:
     description: GitHub workflow name.
     required: true
@@ -46,6 +58,7 @@ runs:
   using: composite
   steps:
     - name: Run Snyk container scan
+      id: snyk-scan
       continue-on-error: true
       uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
       env:
@@ -123,74 +136,38 @@ runs:
           | fix_security_severity_fields
         ' snyk.sarif > snyk-upload.sarif
 
+    - name: Build Snyk summary
+      id: snyk-summary
+      if: ${{ hashFiles('snyk.sarif') != '' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        total="$(jq '[.runs[].results[]?] | length' snyk.sarif)"
+        high="$(jq '[.runs[].results[]? | select(.level == "error")] | length' snyk.sarif)"
+        medium="$(jq '[.runs[].results[]? | select(.level == "warning")] | length' snyk.sarif)"
+        low="$(jq '[.runs[].results[]? | select(.level == "note")] | length' snyk.sarif)"
+
+        echo "results_count=${total}" >> "$GITHUB_OUTPUT"
+        echo "summary=Total: ${total}, High: ${high}, Medium: ${medium}, Low: ${low}" >> "$GITHUB_OUTPUT"
+
     - name: Upload Snyk SARIF
+      id: upload-sarif
       if: ${{ always() && hashFiles('snyk-upload.sarif') != '' }}
       uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
       with:
         sarif_file: snyk-upload.sarif
         category: ${{ inputs.category }}
 
-    - name: Slack notification
-      if: ${{ failure() }}
-      uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3
+    - name: Snyk slack notification
+      uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/slack_snyk_scan_notification@8814948063257e87e324381e273af464243de470 # v1.0.18
+      if: (failure() || steps.snyk-scan.outcome == 'failure' || steps.snyk-summary.outputs.results_count > 0) && inputs.channel_id != 'NO_SLACK'
       with:
-        method: chat.postMessage
-        token: ${{ inputs.slack_token }}
-        payload: |
-          {
-            "channel": "${{ inputs.slack_channel }}",
-            "text": "Base image build failed for ${{ inputs.repository }}",
-            "attachments": [
-              {
-                "color": "danger",
-                "fallback": "${{ inputs.dockerfile_dir }} Image Build Failed - ${{ inputs.workflow }} in ${{ inputs.repository }}",
-                "blocks": [
-                  {
-                    "type": "header",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "🔨 ${{ inputs.dockerfile_dir }} Image Build Failed"
-                    }
-                  },
-                  {
-                    "type": "section",
-                    "fields": [
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Workflow:*\n${{ inputs.workflow }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Repository:*\n${{ inputs.repository }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Branch:*\n${{ inputs.ref_name }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Tag:*\n${{ inputs.tag }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Status:*\n${{ inputs.job_status }}"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "actions",
-                    "elements": [
-                      {
-                        "type": "button",
-                        "text": {
-                          "type": "plain_text",
-                          "text": "View Run"
-                        },
-                        "url": "https://github.com/${{ inputs.repository }}/actions/runs/${{ inputs.run_id }}"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
+        title: Snyk
+        warningOnly: ${{ steps.upload-sarif.outcome == 'success' }}
+        channel_id: ${{ inputs.channel_id }}
+        SLACK_BOT_TOKEN: ${{ inputs.slack_token }}
+        subproject: ${{ inputs.subproject }}
+        scan_context: ${{ inputs.scan_type }}
+        summary: ${{ inputs.slack_include_summary && steps.snyk-summary.outputs.summary || '' }}
+

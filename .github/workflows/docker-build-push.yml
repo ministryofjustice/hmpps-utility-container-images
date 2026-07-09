@@ -102,7 +102,10 @@ jobs:
           category: snyk-${{ matrix.dockerfile-dir }}
           snyk_token: ${{ secrets.HMPPS_SNYK_API_KEY }}
           slack_token: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
-          slack_channel: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID }}
+          channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID }}
+          subproject: ${{ matrix.dockerfile-dir }}
+          scan_type: hmpps-utility-container-image
+          slack_include_summary: true
           workflow: ${{ github.workflow }}
           repository: ${{ github.repository }}
           ref_name: ${{ github.ref_name }}
