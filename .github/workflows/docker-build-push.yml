@@ -104,8 +104,6 @@ jobs:
           location: '.'
           snyk_policy_path: ''
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          client_id: ${{ secrets.HMPPS_SNYK_CLIENT_ID }}
-          client_secret: ${{ secrets.HMPPS_SNYK_CLIENT_SECRET }}
           snyk_token: ${{ secrets.HMPPS_SNYK_API_KEY }}
           image_ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
 
