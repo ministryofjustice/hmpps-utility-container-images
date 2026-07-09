@@ -94,22 +94,30 @@ jobs:
           channel_id: ${{ vars.SLACK_GITHUB_ALERTS }}
           SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
 
-      - name: Snyk container scan and upload
-        uses: ./.github/actions/snyk-container-scan
+      - name: Snyk scan
+        id: snyk-scan
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/snyk-scan@support-utility-and-base-container-image-scans
         with:
-          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
-          dockerfile: ${{ matrix.dockerfile-dir }}/Dockerfile
-          category: snyk-${{ matrix.dockerfile-dir }}
-          snyk_token: ${{ secrets.HMPPS_SNYK_API_KEY }}
-          slack_token: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
-          channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID }}
           subproject: ${{ matrix.dockerfile-dir }}
-          scan_type: image-from-branch-${{ github.ref_name }}
-          slack_include_summary: true
-          workflow: ${{ github.workflow }}
-          repository: ${{ github.repository }}
-          ref_name: ${{ github.ref_name }}
-          run_id: ${{ github.run_id }}
-          job_status: ${{ job.status }}
-          dockerfile_dir: ${{ matrix.dockerfile-dir }}
-          tag: ${{ github.sha }}
+          severity: high
+          scan_type: image
+          location: '.'
+          snyk_policy_path: ''
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          client_id: ${{ secrets.HMPPS_SNYK_CLIENT_ID }}
+          client_secret: ${{ secrets.HMPPS_SNYK_CLIENT_SECRET }}
+          snyk_token: ${{ secrets.HMPPS_SNYK_API_KEY }}
+          image_ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
+
+      - name: Snyk slack notification
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/slack_snyk_scan_notification@support-utility-and-base-container-image-scans
+        if: (failure() || steps.snyk-scan.outcome == 'failure' || steps.snyk-scan.outputs.results_count > 0) && inputs.channel_id != 'NO_SLACK'
+        with:
+          title: 'Snyk'
+          warningOnly: ${{ steps.snyk-scan.outputs.sarif_upload_outcome == 'success' }}
+          channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID || 'NO_SLACK' }}
+          SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
+          subproject: ''
+          scan_context: image-${{ github.ref_name }}
+          image_ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
+          summary: ${{ steps.snyk-scan.outputs.summary }}
