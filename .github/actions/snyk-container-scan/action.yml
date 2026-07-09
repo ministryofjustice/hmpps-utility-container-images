@@ -1,0 +1,196 @@
+name: Snyk Container Scan and SARIF Upload
+description: Run Snyk container scan, normalize SARIF severity fields, upload SARIF, and notify Slack on failure.
+
+inputs:
+  image:
+    description: Fully qualified image reference to scan.
+    required: true
+  dockerfile:
+    description: Dockerfile path for Snyk context.
+    required: true
+  category:
+    description: SARIF category for GitHub code scanning upload.
+    required: true
+  snyk_token:
+    description: Snyk API token.
+    required: true
+  slack_token:
+    description: Slack bot token for failure notifications.
+    required: true
+  slack_channel:
+    description: Slack channel ID for failure notifications.
+    required: true
+  workflow:
+    description: GitHub workflow name.
+    required: true
+  repository:
+    description: GitHub repository slug.
+    required: true
+  ref_name:
+    description: Git ref name.
+    required: true
+  run_id:
+    description: GitHub run ID.
+    required: true
+  job_status:
+    description: Current job status.
+    required: true
+  dockerfile_dir:
+    description: Matrix dockerfile directory.
+    required: true
+  tag:
+    description: Tag to include in Slack notification.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Run Snyk container scan
+      continue-on-error: true
+      uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
+      env:
+        SNYK_TOKEN: ${{ inputs.snyk_token }}
+      with:
+        image: ${{ inputs.image }}
+        args: --severity-threshold=high --file=${{ inputs.dockerfile }}
+
+    - name: Verify Snyk scan execution
+      shell: bash
+      run: |
+        if [[ ! -s snyk.sarif ]]; then
+          echo "Snyk scan did not complete successfully (missing snyk.sarif)."
+          exit 1
+        fi
+
+    - name: Prepare SARIF for upload
+      if: ${{ hashFiles('snyk.sarif') != '' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        jq '
+          def severity_from_level($level):
+            if $level == "error" then "8.0"
+            elif $level == "warning" then "5.0"
+            elif $level == "note" then "3.0"
+            else "0.0" end;
+
+          def normalize_any_severity($value):
+            if $value == null then "0.0"
+            elif ($value | type) == "number" then ($value | tostring)
+            elif ($value | type) == "string" then
+              if ($value | test("^[0-9]+(\\.[0-9]+)?$")) then $value
+              elif (($value | ascii_downcase) == "critical") then "9.0"
+              elif (($value | ascii_downcase) == "high") then "8.0"
+              elif (($value | ascii_downcase) == "medium") then "5.0"
+              elif (($value | ascii_downcase) == "low") then "3.0"
+              else "0.0" end
+            else "0.0" end;
+
+          def normalize_rule:
+            .properties = (.properties // {})
+            | .defaultConfiguration = (.defaultConfiguration // {})
+            | .properties["security-severity"] =
+                (
+                  .properties["security-severity"] as $sev
+                  | if $sev == null then severity_from_level(.defaultConfiguration.level)
+                    else normalize_any_severity($sev)
+                    end
+                );
+
+          def fix_security_severity_fields:
+            if type == "object" then
+              (with_entries(.value |= fix_security_severity_fields)
+               | if has("security-severity") then
+                   .["security-severity"] = normalize_any_severity(.["security-severity"])
+                 else
+                   .
+                 end)
+            elif type == "array" then
+              map(fix_security_severity_fields)
+            else
+              .
+            end;
+
+          .runs |= map(
+            .tool = (.tool // {})
+            | .tool.driver = (.tool.driver // {})
+            | .tool.driver.rules = ((.tool.driver.rules // []) | map(normalize_rule))
+            | .tool.extensions = ((.tool.extensions // []) | map(
+                .rules = ((.rules // []) | map(normalize_rule))
+              ))
+          )
+          | fix_security_severity_fields
+        ' snyk.sarif > snyk-upload.sarif
+
+    - name: Upload Snyk SARIF
+      if: ${{ always() && hashFiles('snyk-upload.sarif') != '' }}
+      uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+      with:
+        sarif_file: snyk-upload.sarif
+        category: ${{ inputs.category }}
+
+    - name: Slack notification
+      if: ${{ failure() }}
+      uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3
+      with:
+        method: chat.postMessage
+        token: ${{ inputs.slack_token }}
+        payload: |
+          {
+            "channel": "${{ inputs.slack_channel }}",
+            "text": "Base image build failed for ${{ inputs.repository }}",
+            "attachments": [
+              {
+                "color": "danger",
+                "fallback": "${{ inputs.dockerfile_dir }} Image Build Failed - ${{ inputs.workflow }} in ${{ inputs.repository }}",
+                "blocks": [
+                  {
+                    "type": "header",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "🔨 ${{ inputs.dockerfile_dir }} Image Build Failed"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Workflow:*\n${{ inputs.workflow }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Repository:*\n${{ inputs.repository }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Branch:*\n${{ inputs.ref_name }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Tag:*\n${{ inputs.tag }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Status:*\n${{ inputs.job_status }}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "View Run"
+                        },
+                        "url": "https://github.com/${{ inputs.repository }}/actions/runs/${{ inputs.run_id }}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
