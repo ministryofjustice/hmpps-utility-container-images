@@ -104,7 +104,7 @@ jobs:
           slack_token: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
           channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID }}
           subproject: ${{ matrix.dockerfile-dir }}
-          scan_type: hmpps-utility-container-image
+          scan_type: image-from-branch-${{ github.ref_name }}
           slack_include_summary: true
           workflow: ${{ github.workflow }}
           repository: ${{ github.repository }}
