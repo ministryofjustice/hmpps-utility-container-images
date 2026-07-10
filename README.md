@@ -1,6 +1,23 @@
 # HMPPS Utility Container Images
 
-These images are built in github actions see `.github/workflows/docker-build-push.yml` - and they are pushed to [GitHub Packages](https://github.com/orgs/ministryofjustice/packages?repo_name=hmpps-utility-container-images).
+These images are built in GitHub Actions and pushed to [GitHub Packages](https://github.com/orgs/ministryofjustice/packages?repo_name=hmpps-utility-container-images).
+
+## Workflows
+
+- `.github/workflows/docker-build-push.yml`: builds all utility images on push/workflow dispatch and on weekdays at 05:00 UTC. Images are pushed on `main`.
+- `.github/workflows/clamav-daily.yml`: rebuilds `hmpps-clamav-freshclammed` twice daily (00:04 and 12:04 UTC) with a refreshed virus DB. Image is pushed on `main`.
+- `.github/workflows/backup_repository.yml`: backs up this repository to SharePoint on schedule and by manual trigger.
+
+## Security Scanning
+
+Security scanning for utility container images is done with Snyk in `.github/workflows/docker-build-push.yml`.
+
+- The workflow scans each built image in the matrix using `scan_type: image`.
+- Scan results are uploaded to GitHub code scanning as SARIF.
+- Slack notifications include scan context (including branch name) and a summary when findings are present.
+
+## Images
+
 
 | Image                       | Description                                                                                          |
 |-----------------------------|------------------------------------------------------------------------------------------------------|
@@ -14,11 +31,3 @@ These images are built in github actions see `.github/workflows/docker-build-pus
 | `hmpps-clamav`              | ClamAV base image, see README in folder                                                              |
 | `hmpps-clamav-freshclammed` | ClamAV image, twice daily updated virus DB, see README in folder                                     |
 | `hmpps-python-deps`         | Python install with dependencies for running python scripts                                          |
-
-## Trivy Scan
-
-We have a scheduled Trivy scan [GitHub Action](/.github/workflows/trivy_scan_latest.yml) which runs every week day.
-
-Vulnerability failures can often be resolved by pushing an empty commit which will bump/refresh the container builds.
-
-This also has the benefit of creating activity in the repository, as GitHub has the [policy of disabling scheduled workflows after 60 days of inactivity](https://docs.github.com/en/actions/managing-workflow-runs/disabling-and-enabling-a-workflow). See [Slack thread](https://mojdt.slack.com/archives/C69NWE339/p1676032009950009) discussing this.
