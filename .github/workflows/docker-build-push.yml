@@ -11,6 +11,8 @@ jobs:
   build_scan_push:
     name: Build-Scan-Push
     runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.HMPPS_SNYK_API_KEY }}
     strategy:
       fail-fast: false
       matrix:
@@ -91,3 +93,29 @@ jobs:
           input_file: slack-results.txt
           channel_id: ${{ vars.SLACK_GITHUB_ALERTS }}
           SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
+
+      - name: Snyk scan
+        id: snyk-scan
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/snyk-scan@v1
+        with:
+          subproject: ${{ matrix.dockerfile-dir }}
+          severity: high
+          scan_type: image
+          location: '.'
+          snyk_policy_path: ''
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          snyk_token: ${{ secrets.HMPPS_SNYK_API_KEY }}
+          image_ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
+
+      - name: Snyk slack notification
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/slack_snyk_scan_notification@v1
+        if: (failure() || steps.snyk-scan.outcome == 'failure' || steps.snyk-scan.outputs.results_count > 0) && inputs.channel_id != 'NO_SLACK'
+        with:
+          title: 'Snyk'
+          warningOnly: ${{ steps.snyk-scan.outputs.sarif_upload_outcome == 'success' }}
+          channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID || 'NO_SLACK' }}
+          SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
+          subproject: ''
+          scan_context: image-${{ github.ref_name }}
+          image_ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.dockerfile-dir }}:${{ github.sha }}
+          summary: ${{ steps.snyk-scan.outputs.summary }}
