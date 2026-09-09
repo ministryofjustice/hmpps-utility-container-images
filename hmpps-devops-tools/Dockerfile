@@ -1,11 +1,11 @@
-FROM python:3-slim-bookworm
+FROM python:3-slim-trixie
 
 ENV \
   HELM_VERSION=4.2.4 \
   KUBECTL_VERSION=1.37.0
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
-    && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg software-properties-common build-essential vim jq zsh groff git curl wget zip unzip httpie dnsutils apache2-utils \
+    && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg build-essential vim jq zsh groff git curl wget zip unzip httpie dnsutils apache2-utils \
     && locale-gen en_GB.UTF-8 \
     && ln -fs /usr/share/zoneinfo/UTC /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
@@ -15,9 +15,10 @@ RUN apt-get clean && apt-get update && apt-get upgrade -y \
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir awscli aws-shell awscli-login boto3 botocore wheel urllib3
 
+# Microsoft does not yet publish Azure CLI packages for Trixie; use the supported Bookworm fallback.
+# https://github.com/Azure/azure-cli/issues/32069
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null \
-    && AZ_REPO=$(lsb_release -cs) \
-    && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list \
+    && echo "deb [arch=$(dpkg --print-architecture)] https://packages.microsoft.com/repos/azure-cli/ bookworm main" | tee /etc/apt/sources.list.d/azure-cli.list \
     && apt-get update \
     && apt-get install --no-install-recommends -qy azure-cli
 
