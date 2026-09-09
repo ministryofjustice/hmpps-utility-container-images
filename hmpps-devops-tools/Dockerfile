@@ -15,6 +15,8 @@ RUN apt-get clean && apt-get update && apt-get upgrade -y \
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir awscli aws-shell awscli-login boto3 botocore wheel urllib3
 
+# Microsoft does not yet publish Azure CLI packages for Trixie; use the supported Bookworm fallback.
+# https://github.com/Azure/azure-cli/issues/32069
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null \
     && echo "deb [arch=$(dpkg --print-architecture)] https://packages.microsoft.com/repos/azure-cli/ bookworm main" | tee /etc/apt/sources.list.d/azure-cli.list \
     && apt-get update \
