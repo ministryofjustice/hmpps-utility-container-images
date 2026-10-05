@@ -2,7 +2,7 @@ FROM python:3-slim-trixie
 
 ENV \
   HELM_VERSION=4.3.0 \
-  KUBECTL_VERSION=1.37.0
+  KUBECTL_VERSION=1.37.1
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -qy locales tzdata apt-utils apt-transport-https lsb-release gnupg build-essential vim jq zsh groff git curl wget zip unzip httpie dnsutils apache2-utils \
